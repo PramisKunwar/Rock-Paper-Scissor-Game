@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROCK-PAPER-SCISSOR GAME</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>ROCK PAPER SCISSOR</h1>
     <div class="choices">
-    <div class="choice" id="rock">
-        <img src="Rock.png" alt="Rock">
-    </div>
-    <div class="choice" id="paper">
-        <img src="Paper.png" alt="Paper">
-    </div>
-    <div class="choice" id="scissor">
-        <img src="Scissor.png" alt="Scissor">
-    </div>
+        <div class="choice" id="rock">
+            <img src="{{ url_for('static', filename='Rock.png') }}" alt="Rock">
+        </div>
+        <div class="choice" id="paper">
+            <img src="{{ url_for('static', filename='Paper.png') }}" alt="Paper">
+        </div>
+        <div class="choice" id="scissor">
+            <img src="{{ url_for('static', filename='Scissor.png') }}" alt="Scissor">
+        </div>
     </div>
 
     <div class="score-board">
@@ -34,6 +34,6 @@
         <p id="msg">Play your move</p>
     </div>
 
-    <script src="script.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
