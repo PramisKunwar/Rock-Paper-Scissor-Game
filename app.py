@@ -6,27 +6,20 @@ from datetime import datetime
 app = Flask(__name__)
 
 # ===== DATABASE CONFIGURATION =====
-# Get database URL from environment variable (set in production)
-# Fall back to SQLite for local development
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///game.db')
 
-# Fix for Heroku's postgres:// vs postgresql://
-# Some platforms use 'postgres://' but SQLAlchemy needs 'postgresql://'
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
-# Configure SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Add connection pool settings for production
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_size': 10,           # Number of connections to keep
-    'pool_recycle': 300,        # Recycle connections after 300 seconds
-    'pool_pre_ping': True,      # Verify connections before using
+    'pool_size': 10,
+    'pool_recycle': 300,
+    'pool_pre_ping': True,
 }
 
-# Initialize database
 db = SQLAlchemy(app)
 
 # ===== DATABASE MODEL =====
@@ -34,7 +27,7 @@ class GameRound(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_choice = db.Column(db.String(10), nullable=False)
     computer_choice = db.Column(db.String(10), nullable=False)
-    result = db.Column(db.String(10), nullable=False)  # win, loss, tie
+    result = db.Column(db.String(10), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -48,19 +41,10 @@ class GameRound(db.Model):
 
 # ===== DATABASE INITIALIZATION =====
 def init_db():
-    """Create database tables if they don't exist"""
     with app.app_context():
         db.create_all()
-        print(f"✅ Database initialized! Using: {database_url.split('@')[0].split('://')[0]} database")
-        # Optional: Check if we can connect
-        try:
-            # Try a simple query to verify connection
-            db.session.execute('SELECT 1')
-            print("✅ Database connection successful!")
-        except Exception as e:
-            print(f"❌ Database connection failed: {e}")
+        print("✅ Database initialized!")
 
-# Call this when the app starts
 init_db()
 
 # ===== ROUTES =====
@@ -68,7 +52,6 @@ init_db()
 def index():
     return render_template('index.html')
 
-# API: Save a game round (CREATE)
 @app.route('/api/game', methods=['POST'])
 def save_game():
     try:
@@ -93,7 +76,6 @@ def save_game():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# API: Get all game history (READ)
 @app.route('/api/history', methods=['GET'])
 def get_history():
     try:
@@ -102,7 +84,6 @@ def get_history():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# API: Get game statistics
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
     try:
@@ -119,7 +100,6 @@ def get_stats():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# API: Delete a specific game round (DELETE)
 @app.route('/api/game/<int:round_id>', methods=['DELETE'])
 def delete_game(round_id):
     try:
@@ -131,7 +111,6 @@ def delete_game(round_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# API: Delete all game history
 @app.route('/api/history', methods=['DELETE'])
 def delete_all_history():
     try:
@@ -142,11 +121,9 @@ def delete_all_history():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# Health check endpoint (useful for deployment)
 @app.route('/api/health', methods=['GET'])
 def health_check():
     try:
-        # Check database connection
         db.session.execute('SELECT 1')
         return jsonify({'status': 'healthy', 'database': 'connected'})
     except Exception as e:
