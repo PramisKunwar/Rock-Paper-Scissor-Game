@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROCK-PAPER-SCISSOR GAME</title>
+    <title>ROCK PAPER SCISSOR GAME</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>ROCK PAPER SCISSOR</h1>
+    
     <div class="choices">
         <div class="choice" id="rock">
             <img src="{{ url_for('static', filename='Rock.png') }}" alt="Rock">
@@ -30,6 +31,7 @@
             <p>Comp</p>
         </div>
     </div>
+    
     <div class="msg-container">
         <p id="msg">Play your move</p>
     </div>
